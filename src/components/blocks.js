@@ -77,3 +77,176 @@ export function BlockSpinner({ position = [ 0, 0, 0 ] })
     </group>
 }
 
+/**
+ * BlockLimbo
+ * A vertically oscillating obstacle (like a limbo bar).
+ * Uses a sine wave to move the obstacle up and down continuously.
+ * A random phase offset ensures variation when used multiple times in a level.
+ */
+export function BlockLimbo({ position = [ 0, 0, 0 ] })
+{
+    const obstacle = useRef()
+    const [ timeOffset ] = useState(() => Math.random() * Math.PI * 2)
+
+    useFrame((state) => 
+    {
+        const time = state.clock.getElapsedTime()
+        
+        const y = Math.sin(time + timeOffset) + 1.15
+        obstacle.current.setNextKinematicTranslation( { x: position[0], y: position[1] + y, z: position[2] } )
+    })
+
+    return <group position= { position }>
+        {/* Static floor */}
+        <mesh 
+            geometry={ boxGeometry } 
+            material={ floor1Material} 
+            position={ [ 0, -0.1, 0] } 
+            scale={ [ 4, 0.2, 4] } 
+            receiveShadow 
+        />
+        {/* Kinematic rotating obstacle */}
+        <RigidBody 
+        ref={ obstacle } 
+        type="kinematicPosition" 
+        position={ [ 0, 0.3, 0 ] } 
+        restitution={ 0.2 } 
+        friction={ 0 }
+        >
+            <mesh 
+                geometry={ boxGeometry } 
+                material={ obstacleMaterial } 
+                position={ [ 0, -0.1, 0] } 
+                scale={ [ 3.5, 1.25, 0.3 ] } 
+                castShadow 
+                receiveShadow 
+            />
+        </RigidBody>
+    </group>
+}
+
+/**
+ * BlockAxe (Updated)
+ * A swinging axe made of a vertical shaft and horizontal blade.
+ * Rotates left and right like a pendulum around the Z-axis.
+ */
+export function BlockAxe({ position = [0, 0, 0] }) {
+    const obstacle = useRef()
+    const [speed] = useState(() => (Math.random() * 0.5 + 1.75))
+    const [offset] = useState(() => Math.random() * Math.PI * 2)
+
+    useFrame((state) => {
+        const time = state.clock.getElapsedTime()
+        const angle = Math.sin(time * speed + offset) * Math.PI * 0.35 // ~40 deg swing
+
+        const rotation = new THREE.Quaternion()
+        rotation.setFromEuler(new THREE.Euler(0, 0, angle)) // Z-axis rotation (pendulum)
+
+        obstacle.current.setNextKinematicRotation(rotation)
+    })
+
+    return (
+        <group position={ position }>
+            {/* Static floor */}
+            <mesh
+                geometry={ boxGeometry }
+                material={ floor1Material }
+                position={ [ 0, -0.1, 0 ] }
+                scale={ [ 4, 0.2, 4 ] }
+                receiveShadow
+            />
+
+            {/* Swinging axe group */}
+            <RigidBody
+                ref={ obstacle }
+                type="kinematicPosition"
+                position={ [ 0, 1.5, 0 ] }
+                restitution={ 0.2 }
+                friction={ 0 }
+            >
+                <group>
+                    {/* Axe shaft */}
+                    <mesh
+                        geometry={ boxGeometry }
+                        material={ obstacleMaterial }
+                        scale={ [ 0.2, 1, 0.2 ] }
+                        position={ [ 0, -0.5, 0 ] } // centered around pivot
+                        castShadow
+                    />
+                    {/* Axe blade */}
+                    <mesh
+                        geometry={ boxGeometry }
+                        material={ obstacleMaterial }
+                        scale={ [ 1.5, 0.7, 0.2 ] }
+                        position={ [ 0, -1.1, 0 ] }
+                        castShadow
+                    />
+                </group>
+            </RigidBody>
+        </group>
+    )
+}
+
+/**
+ * BlockStepper
+ * A sequence of stepping platforms that move vertically at random speeds and time offsets.
+ * Each BlockStepper instance generates a unique rhythm for its three steps.
+ */
+
+export function BlockStepper({ position }) {
+    const stepRefs = [ useRef(), useRef(), useRef() ]
+
+    // Generate unique speeds and phase offsets for each step on mount
+    const [motion] = useState(() =>
+        Array.from({ length: 3 }, () => ({
+            speed: Math.random() * 0.6 + 1.0,       // random speed between 1.0 and 1.6
+            offset: Math.random() * Math.PI * 2     // full sine phase offset
+        }))
+    )
+
+    useFrame((state) => {
+        const time = state.clock.getElapsedTime()
+
+        stepRefs.forEach(( ref, i ) => {
+            const { speed, offset } = motion[i]
+            const y = Math.sin( time * speed + offset ) * 0.5 + 0.4
+            ref.current.setNextKinematicTranslation({
+                x: position[0] + (i - 1) * 1.2,
+                y: position[1] + y,
+                z: position[2],
+            })
+        })
+    })
+
+    return (
+        <group position={ position }>
+            {/* Static floor */}
+            <mesh
+                geometry={ boxGeometry }
+                material={ floor1Material }
+                position={ [ 0, -0.1, 0 ] }
+                scale={ [ 4, 0.2, 4 ] }
+                receiveShadow
+            />
+            {/* Animated stepping platforms */}
+            {stepRefs.map((ref, i) => (
+                <RigidBody
+                    key={ i }
+                    ref={ ref }
+                    type="kinematicPosition"
+                    restitution={ 0.2 }
+                    friction={ 0 }
+                >
+                    <mesh
+                        geometry={ boxGeometry }
+                        material={ obstacleMaterial }
+                        position={ [ 0, -0.1, 0 ] }
+                        scale={ [ 0.8, 0.2, 0.8 ] }
+                        castShadow
+                        receiveShadow
+                    />
+                </RigidBody>
+            ))}
+        </group>
+    )
+}
