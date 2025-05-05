@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { RigidBody } from '@react-three/rapier'
 import { useState, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
+import { Text3D } from '@react-three/drei'
 
 // Shared geometry and materials - created once, when the file is first loaded for perf optimization
 const boxGeometry = new THREE.BoxGeometry(1, 1, 1)
@@ -249,4 +250,46 @@ export function BlockStepper({ position }) {
             ))}
         </group>
     )
+}
+
+/**
+ * BlockEnd
+ * A simple flat floor block used to mark the end of the level.
+ */
+export function BlockEnd({ position = [ 0, 0, 0 ] })
+{
+    return <group position= { position }>
+        {/* Static floor */}
+        <mesh 
+            geometry={ boxGeometry } 
+            material={ floor2Material} 
+            position={ [ 0, 0, 0] } 
+            scale={ [ 4, 0.2, 4] } 
+            receiveShadow 
+        />
+        <RigidBody  
+        type="fixed" 
+        position={ [ - 1.6, 0.25, - 1.25 ] } 
+        restitution={ 0.2 } 
+        friction={ 0 }
+        >
+            <Text3D
+                curveSegments={ 32 }
+                bevelEnabled
+                bevelSize={ 0.04 }
+                bevelThickness={ 0.1 }
+                height={ 0.5 }
+                lineHeight={ 0.5 }
+                letterSpacing={ 0.06 }
+                size={ 0.6 }
+                font="../Montserrat_Bold.json"
+                castShadow
+                receiveShadow
+            >
+                {`FINISH`}
+                <meshStandardMaterial color={ '#E300FF'} roughness={ 0.0 } metalness={ 0.2 } />
+            </Text3D>
+
+        </RigidBody>
+    </group>
 }
