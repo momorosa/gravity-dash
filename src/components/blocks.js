@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { RigidBody } from '@react-three/rapier'
+import { CuboidCollider, RigidBody } from '@react-three/rapier'
 import { useState, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Text3D } from '@react-three/drei'
@@ -292,4 +292,40 @@ export function BlockEnd({ position = [ 0, 0, 0 ] })
 
         </RigidBody>
     </group>
+}
+
+export function Bounds({ length = 1 })
+{
+    console.log(length)
+    return <>
+        <RigidBody type="fixed" restitution={ 0.2 } friction={ 0 }>
+            <mesh
+                position={ [ 2.15, 0.75, - (length * 2) +2 ] }
+                geometry={ boxGeometry }
+                material={ wallMaterial }
+                scale={ [ 0.3, 1.5, 4 * length ] }
+                castShadow     
+            />
+            <mesh
+                position={ [ - 2.15, 0.75, - (length * 2) +2 ] }
+                geometry={ boxGeometry }
+                material={ wallMaterial }
+                scale={ [ 0.3, 1.5, 4 * length ] }
+                receiveShadow   
+            />
+            <mesh
+                position={ [ 0, 0.75, - (length * 4) +2 ] }
+                geometry={ boxGeometry }
+                material={ wallMaterial }
+                scale={ [ 4.6, 1.5, 0.3 ] }
+                receiveShadow   
+            />
+            <CuboidCollider 
+                args={ [ 2, 0.1, 2 * length ] } 
+                position={ [ 0, - 0.1, - (length * 2) + 2 ] }
+                restitution={ 0.2 }
+                friction={ 1 }
+            />
+        </RigidBody>
+    </>
 }
