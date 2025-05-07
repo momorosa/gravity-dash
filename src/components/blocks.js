@@ -178,7 +178,7 @@ export function BlockAxe({ position = [0, 0, 0] }) {
                     <mesh
                         geometry={ boxGeometry }
                         material={ obstacleMaterial }
-                        scale={ [ 1.5, 0.7, 0.2 ] }
+                        scale={ [ 2, 1.2, 0.2 ] }
                         position={ [ 0, -1.1, 0 ] }
                         castShadow
                     />
@@ -200,7 +200,7 @@ export function BlockStepper({ position }) {
     // Generate unique speeds and phase offsets for each step on mount
     const [motion] = useState(() =>
         Array.from({ length: 3 }, () => ({
-            speed: Math.random() * 0.6 + 1.0,       // random speed between 1.0 and 1.6
+            speed: Math.random() * 0.6 + 2.0,       // random speed between 1.0 and 2.6
             offset: Math.random() * Math.PI * 2     // full sine phase offset
         }))
     )
@@ -296,7 +296,6 @@ export function BlockEnd({ position = [ 0, 0, 0 ] })
 
 export function Bounds({ length = 1 })
 {
-    console.log(length)
     return <>
         <RigidBody type="fixed" restitution={ 0.2 } friction={ 0 }>
             <mesh
