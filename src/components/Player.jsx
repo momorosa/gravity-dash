@@ -48,6 +48,7 @@ export default function Player()
     {
         /**
          * Controls
+         * Apply directional impulse and torque based on keyboard input.
          */
         const { forward, backward, leftward, rightward } = getKeys()
 
@@ -86,21 +87,26 @@ export default function Player()
 
         /**
          * Camera
+         * Smoothly interpolate camera position and target toward the player.
          */
         const bodyPosition = body.current.translation()
 
+        // Desired camera position (offset behind and above the player)
         const cameraPosition = new THREE.Vector3()
         cameraPosition.copy(bodyPosition)
         cameraPosition.z += 2.25
         cameraPosition.y += 0.65
 
+        // Where the camera should look (slightly above the player’s center)
         const cameraTarget = new THREE.Vector3()
         cameraTarget.copy(bodyPosition)
         cameraTarget.y += 0.25
 
+        // Smooth camera movement using linear interpolation (lerp)
         smoothedCameraPosition.lerp(cameraPosition, 5 * delta)
         smoothedCameraTarget.lerp(cameraTarget, 5 * delta)
 
+        // Apply smoothed position and target to the actual camera
         state.camera.position.copy(smoothedCameraPosition)
         state.camera.lookAt(smoothedCameraTarget)
     })
