@@ -94,6 +94,7 @@ export function BlockLimbo({ position = [ 0, 0, 0 ] })
         const time = state.clock.getElapsedTime()
         
         const y = Math.sin(time + timeOffset) + 1.15
+        if (!obstacle.current) return
         obstacle.current.setNextKinematicTranslation( { x: position[0], y: position[1] + y, z: position[2] } )
     })
 
@@ -143,6 +144,7 @@ export function BlockAxe({ position = [0, 0, 0] }) {
         const rotation = new THREE.Quaternion()
         rotation.setFromEuler(new THREE.Euler(0, 0, angle)) // Z-axis rotation (pendulum)
 
+        if (!obstacle.current) return
         obstacle.current.setNextKinematicRotation(rotation)
     })
 
@@ -209,6 +211,9 @@ export function BlockStepper({ position }) {
         const time = state.clock.getElapsedTime()
 
         stepRefs.forEach(( ref, i ) => {
+
+            if (!ref.current) return
+            
             const { speed, offset } = motion[i]
             const y = Math.sin( time * speed + offset ) * 0.5 + 0.4
             ref.current.setNextKinematicTranslation({
