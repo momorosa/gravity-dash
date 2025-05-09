@@ -1,7 +1,21 @@
+import { useRef } from 'react'
+import { useFrame } from '@react-three/fiber'
+
 export default function Lights()
 {
+    const light = useRef()
+
+    useFrame((state) => 
+    {
+        // // Dynamically move the directional light along the Z-axis to follow the player
+        light.current.position.z = state.camera.position.z - 3 // Offset slightly behind camera
+        light.current.target.position.z = state.camera.position.z - 4 // Target a bit further ahead
+        light.current.target.updateMatrixWorld() // Required for shadow direction to update
+    })
+
     return <>
         <directionalLight
+            ref={ light }
             castShadow
             position={ [ 4, 4, 1 ] }
             intensity={ 4.5 }
