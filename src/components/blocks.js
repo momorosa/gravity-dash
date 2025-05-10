@@ -8,8 +8,8 @@ import { Text3D } from '@react-three/drei'
 const boxGeometry = new THREE.BoxGeometry(1, 1, 1)
 
 // Define materials for different surfaces and obstacles
-const floor1Material = new THREE.MeshStandardMaterial({ color: '#FF0000', roughness: 0.2, metalness: 0.2 })
-const floor2Material = new THREE.MeshStandardMaterial({ color: '#E300FF', roughness: 0.2, metalness: 0.2 })
+const floor1Material = new THREE.MeshStandardMaterial({ color: '#FF0000'})
+const floor2Material = new THREE.MeshStandardMaterial({ color: '#E300FF'})
 const obstacleMaterial = new THREE.MeshStandardMaterial({ color: '#910000'})
 const wallMaterial = new THREE.MeshStandardMaterial({ color: '#910000'})
 
@@ -46,6 +46,8 @@ export function BlockSpinner({ position = [ 0, 0, 0 ] })
         
         const rotation = new THREE.Quaternion()
         rotation.setFromEuler(new THREE.Euler( 0, time * speed, 0 ))
+        
+        if (!obstacle.current) return
         obstacle.current.setNextKinematicRotation(rotation)
     })
 
