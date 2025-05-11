@@ -13,5 +13,6 @@
 #reset-button:hover {
     box-shadow: inset 350px 0 0 0 black;
     transform: scale(1.1);
+    color: white;
 
 }

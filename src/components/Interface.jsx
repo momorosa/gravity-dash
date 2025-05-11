@@ -1,8 +1,12 @@
 import { useKeyboardControls } from "@react-three/drei"
+import { useEffect, useRef } from 'react'
+import { addEffect } from "@react-three/fiber"
 import useGame from '../stores/useGame.jsx'
 
 export default function Interface()
 {
+    const time = useRef()
+    
     const restart = useGame((state) => state.restart )
     const phase = useGame((state) => state.phase )
 
@@ -13,9 +17,40 @@ export default function Interface()
     const rightward = useKeyboardControls((state) => state.rightward)
     const jump = useKeyboardControls((state) => state.jump)
 
+    useEffect(() => 
+    {
+        // Subscribe to a global render loop using R3F's `addEffect`.
+        // This allows us to update the timer outside the Canvas tree.
+        const unsubscriveEffect = addEffect(() =>
+        {
+            const state = useGame.getState()
+
+            let elapsedTime = 0
+
+            // While playing: calculate time since the game started
+            if (state.phase === 'playing')
+                elapsedTime = Date.now() - state.startTime
+            // When ended: lock the displayed time to the final duration
+            else if (state.phase === 'ended')
+                elapsedTime = state.endTime - state.startTime
+            
+            // Format and update the visible timer text
+            elapsedTime /= 1000
+            elapsedTime = elapsedTime.toFixed(2)
+
+            if (time.current)
+                time.current.textContent = elapsedTime
+
+        })
+
+        // Cleanup the effect on unmount
+        return () => { unsubscriveEffect() }
+    }, [])
+
+
     return <div className="fixed top-0 left-0 w-full h-screen pointer-events-none font-primary">
         {/* Timer Display */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 text-3xl text-white font-bold flex justify-center items-center w-64 bg-linear-65 from-purple-900 to-red-500 opacity-75 py-4 rounded-full inset-shadow-sm">
+        <div ref={ time } className="absolute top-4 left-1/2 -translate-x-1/2 text-3xl text-white font-bold flex justify-center items-center w-64 bg-linear-65 from-purple-900 to-red-500 opacity-75 py-4 rounded-full inset-shadow-sm">
             0.00
         </div>
 
@@ -23,7 +58,7 @@ export default function Interface()
         { phase === 'ended' && <div
             onClick={ restart }
             id="reset-button" 
-            className="absolute top-4 left-1/2 -translate-x-1/2 text-2xl text-white font-bold flex justify-center items-center w-80 bg-red-700 py-5 mr-6 pointer-events-auto cursor-pointer rounded-sm"
+            className="absolute top-1/2 -translate-x-1/2 left-1/2 -translate-x-1/2 text-2xl text-black font-bold flex justify-center items-center w-80 bg-white py-5 mr-6 pointer-events-auto cursor-pointer rounded-sm"
         >
             Restart
         </div>}
