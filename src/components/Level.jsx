@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { BlockStart, BlockSpinner, BlockLimbo, BlockAxe, BlockStepper, BlockEnd, Bounds } from './blocks.js'
+import { BlockStart, BlockSpinner, BlockLimbo, BlockAxe, BlockStepper, BlockEnd, Bounds } from './blocks.jsx'
 
 export default function Level({  count = 7, types = [ BlockSpinner, BlockLimbo, BlockAxe, BlockStepper ] })
 {

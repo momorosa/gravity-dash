@@ -22,6 +22,7 @@
     "react": "19.0",
     "react-dom": "19.0",
     "tailwindcss": "^4.1.5",
-    "three": "^0.174.0"
+    "three": "^0.174.0",
+    "zustand": "5.0"
   }
 }

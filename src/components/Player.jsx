@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber'
 import { useKeyboardControls } from '@react-three/drei'
 import { useState, useEffect, useRef } from 'react'
 import * as THREE from 'three'
+import useGame from '../stores/useGame.jsx'
 
 
 export default function Player()
@@ -12,7 +13,12 @@ export default function Player()
     const { rapier, world } = useRapier()
 
     const [ smoothedCameraPosition ] = useState(() => new THREE.Vector3(10, 10, 10))
-    const [ smoothedCameraTarget ] = useState(() => new THREE.Vector3)
+    const [ smoothedCameraTarget ] = useState(() => new THREE.Vector3())
+
+    const start = useGame((state) => state.start)
+    const end = useGame((state) => state.end)
+    const restart = useGame((state) => state.restart)
+    const blocksCount = useGame((state) => state.blocksCount)
 
     const jump = () =>
     {
@@ -22,12 +28,30 @@ export default function Player()
         const ray = new rapier.Ray(origin, direction)
         const hit = world.castRay(ray, 10, true)
 
+        if(!body.current) return
+        
         if(hit.timeOfImpact < 0.15)
             body.current.applyImpulse({ x: 0, y: 0.5, z: 0 })
     }
 
+    const reset = () =>
+    {
+        body.current.setTranslation({ x: 0, y: 1, z: 0 })
+        body.current.setLinvel({ x: 0, y: 0, z: 0 })
+        body.current.setAngvel({ x: 0, y: 0, z: 0 })
+    }
+
     useEffect(() => 
     {
+        const unsubscribeReset = useGame.subscribe(
+            (state) => state.phase,
+            (phase) => 
+            {
+                if(phase === 'ready')
+                    reset()
+            }
+        )
+
         const unsubscribeJump = subscribeKeys(
             // Selector - listening to the jump/spacebar
             (state) => state.jump,
@@ -38,9 +62,18 @@ export default function Player()
             }
         )
 
+        const unsubscribeAny = subscribeKeys(
+            () =>
+            {
+                start()
+            }
+        )
+
         return () =>
         {
+            unsubscribeReset()
             unsubscribeJump()
+            unsubscribeAny()
         }
     }, [])
 
@@ -82,6 +115,8 @@ export default function Player()
             torque.z += torqueStrength
         }
 
+        if(!body.current) return
+
         body.current.applyImpulse(impulse)
         body.current.applyTorqueImpulse(torque)  
 
@@ -109,6 +144,16 @@ export default function Player()
         // Apply smoothed position and target to the actual camera
         state.camera.position.copy(smoothedCameraPosition)
         state.camera.lookAt(smoothedCameraTarget)
+
+        /**
+         * Phases
+         */
+
+        if(bodyPosition.z < - (blocksCount * 4 + 2))
+            end()
+
+        if(bodyPosition.y < - 4)
+            restart()
     })
 
     return <RigidBody 
