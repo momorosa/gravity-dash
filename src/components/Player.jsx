@@ -168,7 +168,7 @@ export default function Player()
     >
         <mesh castShadow>
             <icosahedronGeometry args={ [ 0.3, 1 ] } />
-            <meshStandardMaterial flatShading color="#000000" roughness={ 0.4 }/>
+            <meshStandardMaterial flatShading color="#000000" roughness={ 0.7 } metalness={ 0.2 }/>
         </mesh>
     </RigidBody>
    

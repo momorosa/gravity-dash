@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { BlockStart, BlockSpinner, BlockLimbo, BlockAxe, BlockStepper, BlockEnd, Bounds } from './blocks.jsx'
 
-export default function Level({  count = 7, types = [ BlockSpinner, BlockLimbo, BlockAxe, BlockStepper ] })
+export default function Level({  count = 7, types = [ BlockSpinner, BlockLimbo, BlockAxe, BlockStepper ], seed = 0 })
 {
     const blocks = useMemo(() => 
     {
@@ -13,7 +13,7 @@ export default function Level({  count = 7, types = [ BlockSpinner, BlockLimbo, 
             blocks.push(type)
         }
         return blocks
-    }, [ count, types ])
+    }, [ count, types, seed ])
 
     return <>
         <BlockStart position={ [ 0, 0, 0 ] }/>
