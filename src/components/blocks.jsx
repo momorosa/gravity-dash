@@ -8,10 +8,15 @@ import { Float, Text, Text3D } from '@react-three/drei'
 const boxGeometry = new THREE.BoxGeometry(1, 1, 1)
 
 // Define materials for different surfaces and obstacles
-const floor1Material = new THREE.MeshStandardMaterial({ color: '#FF0000'})
+const floor1Material = new THREE.MeshStandardMaterial({ color: '#023535'})
 const floor2Material = new THREE.MeshStandardMaterial({ color: '#E300FF'})
-const obstacleMaterial = new THREE.MeshStandardMaterial({ color: '#910000'})
-const wallMaterial = new THREE.MeshStandardMaterial({ color: '#910000'})
+const obstacleMaterial = new THREE.MeshStandardMaterial({ 
+    color: '#0FC2C0',
+    emissive: '#0CABA8',
+    emissiveIntensity: 2,
+    toneMapped: false,
+})
+const wallMaterial = new THREE.MeshStandardMaterial({ color: '#015958'})
 
 /**
  * BlockStart
@@ -288,7 +293,22 @@ export function BlockEnd({ position = [ 0, 0, 0 ] })
             scale={ [ 4, 0.2, 4] } 
             receiveShadow 
         />
-        <RigidBody  
+        <Float floatIntensity={ 0.25 } rotationIntensity={ 0.25 }>
+            <Text
+                font="./bebas-neue-v9-latin-regular.woff" 
+                scale={ 1.5 }
+                maxWidth={ 0.5 }
+                textAlign='center'
+                position={ [ 0, 1.30, 0 ] }
+                rotation-y={ - 0.25 }
+                color={'#E300FF'}
+            >
+                Finish
+                <meshBasicMaterial toneMapped ={ false } />
+            </Text>
+        </Float>
+
+        {/* <RigidBody  
         type="fixed" 
         position={ [ - 1.6, 0.25, - 1.25 ] } 
         restitution={ 0.2 } 
@@ -311,7 +331,7 @@ export function BlockEnd({ position = [ 0, 0, 0 ] })
                 <meshStandardMaterial color={ '#E300FF'} roughness={ 0.0 } metalness={ 0.2 } />
             </Text3D>
 
-        </RigidBody>
+        </RigidBody> */}
     </group>
 }
 

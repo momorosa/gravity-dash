@@ -2,6 +2,7 @@ import './style.css'
 import ReactDOM from 'react-dom/client'
 import { Canvas } from '@react-three/fiber'
 import { KeyboardControls } from '@react-three/drei'
+// import { Leva } from 'leva'
 import Experience from './components/Experience.jsx'
 import Interface from './components/Interface.jsx'
 
@@ -28,6 +29,7 @@ root.render(
         >
             <Experience />
         </Canvas>
+        {/* <Leva collapsed={false} /> */}
         <Interface />
     </KeyboardControls>
 )
