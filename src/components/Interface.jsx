@@ -90,14 +90,14 @@ export default function Interface()
         </div>
 
         {/* Health Bar (Placeholder) */}
-        <div id="controls" className="flex items-center absolute bottom-24 left-16">
+        {/* <div id="controls" className="flex items-center absolute bottom-24 left-16">
             <div id="raw" className="flex justify-center">
                 <div className="m-2 bg-white opacity-50 w-80 h-8 border-4 border-gray-300 border-solid rounded-sm">
                     <span className="bg-teal-800 w-64 h-8 z-10"></span>
                 </div>
                 
             </div>
-        </div>
+        </div> */}
 
     </div>
 }

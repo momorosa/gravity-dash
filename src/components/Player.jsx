@@ -8,6 +8,7 @@ import useGame from '../stores/useGame.jsx'
 
 export default function Player()
 {
+
     const body = useRef()
     const [ subscribeKeys, getKeys ] = useKeyboardControls()
     const { rapier, world } = useRapier()
@@ -19,6 +20,7 @@ export default function Player()
     const end = useGame((state) => state.end)
     const restart = useGame((state) => state.restart)
     const blocksCount = useGame((state) => state.blocksCount)
+    const reduceHeath = useGame((state) => state.reduceHealth)
 
     const jump = () =>
     {
@@ -157,14 +159,21 @@ export default function Player()
     })
 
     return <RigidBody 
-        ref={ body } 
+        ref={ body }
+        type='dynamic'
         canSleep={ false } 
         colliders="ball" 
         restitution={ 0.2 } 
         friction={ 1 } 
         linearDamping={ 0.5 }
         angularDamping={ 0.5 }
-        position={ [ 0, 1, 0] } 
+        position={ [ 0, 1, 0] }
+        onCollisionEnter={(e) => {
+            if(e.other.rigidBodyObject.name === "obstacle")
+            {
+                reduceHeath()
+            }
+        }}
     >
         <mesh castShadow>
             <icosahedronGeometry args={ [ 0.3, 1 ] } />

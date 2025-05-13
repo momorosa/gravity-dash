@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { CuboidCollider, RigidBody } from '@react-three/rapier'
-import { useState, useRef } from 'react'
+import { useMemo, useState, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Float, Text, Text3D } from '@react-three/drei'
 
@@ -82,7 +82,8 @@ export function BlockSpinner({ position = [ 0, 0, 0 ] })
         {/* Kinematic rotating obstacle */}
         <RigidBody 
         ref={ obstacle } 
-        type="kinematicPosition" 
+        type="kinematicPosition"
+        name="obstacle"
         position={ [ 0, 0.3, 0 ] } 
         restitution={ 0.2 } 
         friction={ 0 }
@@ -94,6 +95,10 @@ export function BlockSpinner({ position = [ 0, 0, 0 ] })
                 scale={ [ 3.5, 0.3, 0.3 ] } 
                 castShadow 
                 receiveShadow 
+            />
+            <CuboidCollider 
+                args={[ 3.5 / 2, 0.3 / 2, 0.3 / 2 ]} // Half extents!
+                position={[ 0, -0.1, 0 ]}            // Match mesh's local position
             />
         </RigidBody>
     </group>
@@ -131,7 +136,8 @@ export function BlockLimbo({ position = [ 0, 0, 0 ] })
         {/* Kinematic rotating obstacle */}
         <RigidBody 
         ref={ obstacle } 
-        type="kinematicPosition" 
+        type="kinematicPosition"
+        name="obstacle"
         position={ [ 0, 0.3, 0 ] } 
         restitution={ 0.2 } 
         friction={ 0 }
@@ -140,9 +146,13 @@ export function BlockLimbo({ position = [ 0, 0, 0 ] })
                 geometry={ boxGeometry } 
                 material={ obstacleMaterial } 
                 position={ [ 0, -0.1, 0] } 
-                scale={ [ 3.5, 1.25, 0.3 ] } 
+                scale={ [ 3.5, 0.75, 0.3 ] } 
                 castShadow 
                 receiveShadow 
+            />
+            <CuboidCollider 
+                args={[ 3.5 / 2, 0.75 / 2, 0.3 / 2 ]} // Half extents!
+                position={[ 0, -0.1, 0 ]}            // Match mesh's local position
             />
         </RigidBody>
     </group>
@@ -184,6 +194,7 @@ export function BlockAxe({ position = [0, 0, 0] }) {
             <RigidBody
                 ref={ obstacle }
                 type="kinematicPosition"
+                name="obstacle"
                 position={ [ 0, 1.5, 0 ] }
                 restitution={ 0.2 }
                 friction={ 0 }
@@ -206,6 +217,8 @@ export function BlockAxe({ position = [0, 0, 0] }) {
                         castShadow
                     />
                 </group>
+                <CuboidCollider args={[0.1, 0.5, 0.1]} position={[0, -0.5, 0]} />
+                <CuboidCollider args={[1, 0.6, 0.1]} position={[0, -1.1, 0]} />
             </RigidBody>
         </group>
     )
@@ -227,6 +240,10 @@ export function BlockStepper({ position }) {
             offset: Math.random() * Math.PI * 2     // full sine phase offset
         }))
     )
+
+    const randomHeights = useMemo(() => 
+        Array.from({ length: 3 }, () => 0.2 + Math.random() * 0.4), []
+      )
 
     useFrame((state) => {
         const time = state.clock.getElapsedTime()
@@ -261,6 +278,8 @@ export function BlockStepper({ position }) {
                     key={ i }
                     ref={ ref }
                     type="kinematicPosition"
+                    name="obstacle"
+                    colliders="cuboid"
                     restitution={ 0.2 }
                     friction={ 0 }
                 >
@@ -268,7 +287,7 @@ export function BlockStepper({ position }) {
                         geometry={ boxGeometry }
                         material={ obstacleMaterial }
                         position={ [ 0, -0.1, 0 ] }
-                        scale={ [ 0.8, 0.2, 0.8 ] }
+                        scale={ [ 0.8, randomHeights[i], 0.8 ] }
                         castShadow
                         receiveShadow
                     />
@@ -307,31 +326,6 @@ export function BlockEnd({ position = [ 0, 0, 0 ] })
                 <meshBasicMaterial toneMapped ={ false } />
             </Text>
         </Float>
-
-        {/* <RigidBody  
-        type="fixed" 
-        position={ [ - 1.6, 0.25, - 1.25 ] } 
-        restitution={ 0.2 } 
-        friction={ 0 }
-        >
-            <Text3D
-                curveSegments={ 32 }
-                bevelEnabled
-                bevelSize={ 0.04 }
-                bevelThickness={ 0.1 }
-                height={ 0.5 }
-                lineHeight={ 0.5 }
-                letterSpacing={ 0.06 }
-                size={ 0.6 }
-                font="../Montserrat_Bold.json"
-                castShadow
-                receiveShadow
-            >
-                {`FINISH`}
-                <meshStandardMaterial color={ '#E300FF'} roughness={ 0.0 } metalness={ 0.2 } />
-            </Text3D>
-
-        </RigidBody> */}
     </group>
 }
 

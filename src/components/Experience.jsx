@@ -1,6 +1,5 @@
 import { Physics } from '@react-three/rapier'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
-
 import Lights from '../components/Lights.jsx'
 import Level from '../components/Level.jsx'
 import Player from '../components/Player.jsx'
@@ -17,7 +16,7 @@ export default function Experience()
     return <>
         
         <color args={ [ '#023535' ] } attach="background" />
-        <Physics debug={ false }>
+        <Physics debug={ true } >
             <Lights />
             <Level count={ blocksCount } seed={ blocksSeed} />
             <Player />

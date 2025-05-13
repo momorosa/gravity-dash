@@ -6,11 +6,26 @@ export default create(subscribeWithSelector((set) =>
         return {
             blocksCount: 10,
             blocksSeed: 0,
-              /**
+
+            /**
              * Time
              */  
             startTime: 0,
             endTime: 0,
+
+            /**
+             * Health
+             */ 
+            // existing state
+            health: 10,
+
+            reduceHealth: ( amount = 0.5 ) => 
+            {
+                set((state) => 
+                {
+                    return { health: Math.max(0, state.health - amount ) }
+                })
+            },
 
             /**
              * Phases
