@@ -20,7 +20,8 @@ export default function Player()
     const end = useGame((state) => state.end)
     const restart = useGame((state) => state.restart)
     const blocksCount = useGame((state) => state.blocksCount)
-    const reduceHeath = useGame((state) => state.reduceHealth)
+    const reduceHealth = useGame((state) => state.reduceHealth)
+    const health = useGame((state) => state.health)
 
     const jump = () =>
     {
@@ -150,12 +151,12 @@ export default function Player()
         /**
          * Phases
          */
+        if(bodyPosition.y < - 4 || health === 0)
+            restart()
+            return
 
         if(bodyPosition.z < - (blocksCount * 4 + 2))
-            end()
-
-        if(bodyPosition.y < - 4)
-            restart()
+            end()  
     })
 
     return <RigidBody 
@@ -171,7 +172,7 @@ export default function Player()
         onCollisionEnter={(e) => {
             if(e.other.rigidBodyObject.name === "obstacle")
             {
-                reduceHeath()
+                reduceHealth()
             }
         }}
     >

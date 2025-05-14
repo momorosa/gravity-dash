@@ -37,7 +37,7 @@ export default create(subscribeWithSelector((set) =>
                 set((state) =>
                 {
                     if(state.phase === 'ready')
-                        return { phase: 'playing', startTime: Date.now() }
+                        return { phase: 'playing', startTime: Date.now(), health: 10 }
         
                     return {}
                 })
@@ -47,8 +47,8 @@ export default create(subscribeWithSelector((set) =>
             {
                 set((state) =>
                 {
-                    if(state.phase === 'playing' || state.phase === 'ended')
-                        return { phase: 'ready', blocksSeed: Math.random() }
+                    if(state.phase === 'playing' || state.phase === 'ended' || state.health === 0)
+                        return { phase: 'ready', blocksSeed: Math.random(), health: 10 }
         
                     return {}
                 })

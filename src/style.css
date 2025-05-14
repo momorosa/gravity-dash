@@ -3,6 +3,7 @@
 
 @theme {
     --font-primary: "Montserrat", "sans-serif";
+    --pulse-low: pulse 2s infinit;
 }
 
 #reset-button {

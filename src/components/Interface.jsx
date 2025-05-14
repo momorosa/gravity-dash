@@ -9,6 +9,12 @@ export default function Interface()
     
     const restart = useGame((state) => state.restart )
     const phase = useGame((state) => state.phase )
+    const health = useGame((state) => state.health )
+
+    const barWidth = `${( health / 10 ) * 100}%`
+    const isLow = health < 3
+    const barColor = isLow ? 'bg-red-500' : 'bg-green-500'
+    const pulse = isLow ? 'pulse-low' : ''
 
     // Keyboard input states
     const forward = useKeyboardControls((state) => state.forward)
@@ -89,15 +95,14 @@ export default function Interface()
             </div>
         </div>
 
-        {/* Health Bar (Placeholder) */}
-        {/* <div id="controls" className="flex items-center absolute bottom-24 left-16">
-            <div id="raw" className="flex justify-center">
-                <div className="m-2 bg-white opacity-50 w-80 h-8 border-4 border-gray-300 border-solid rounded-sm">
-                    <span className="bg-teal-800 w-64 h-8 z-10"></span>
-                </div>
-                
-            </div>
-        </div> */}
+        {/* Health Bar */}
+        <div className="absolute bottom-24 left-16 w-80 h-8 border-4 border-gray-300 bg-white rounded overflow-hidden">
+            <div 
+                className={`h-full ${ barColor } ${ pulse } transition-all duration-300`}
+                style={{ width: barWidth }}
+            />
+            <p className="absolute inset-0 text-center text-sm font-bold text-black flex items-center justify-center pointer-events-none">{ health.toFixed(1) } / 10</p>
+        </div>
 
     </div>
 }
