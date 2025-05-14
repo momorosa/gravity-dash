@@ -153,7 +153,7 @@ export default function Player()
          */
         if(bodyPosition.y < - 4 || health === 0)
             restart()
-            return
+            // return
 
         if(bodyPosition.z < - (blocksCount * 4 + 2))
             end()  
@@ -170,7 +170,7 @@ export default function Player()
         angularDamping={ 0.5 }
         position={ [ 0, 1, 0] }
         onCollisionEnter={(e) => {
-            if(e.other.rigidBodyObject.name === "obstacle")
+            if(e.other.rigidBodyObject?.name === "obstacle")
             {
                 reduceHealth()
             }

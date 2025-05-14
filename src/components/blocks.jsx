@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { CuboidCollider, RigidBody } from '@react-three/rapier'
-import { useMemo, useState, useRef } from 'react'
+import { useEffect, useMemo, useState, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Float, Text, Text3D } from '@react-three/drei'
 
@@ -57,6 +57,10 @@ export function BlockStart({ position = [ 0, 0, 0 ] })
 export function BlockSpinner({ position = [ 0, 0, 0 ] })
 {
     const obstacle = useRef()
+    const meshRef = useRef()
+    const [isHit, setIsHit] = useState(false)
+
+    // Rotate obstacle
     const [ speed ] = useState(() => (Math.random() + 0.2) * (Math.random() < 0.5 ? -1 : 1))
 
     useFrame((state) => 
@@ -70,6 +74,16 @@ export function BlockSpinner({ position = [ 0, 0, 0 ] })
         obstacle.current.setNextKinematicRotation(rotation)
     })
 
+    // Update material emissive color based on hit
+    const material = useMemo(() => obstacleMaterial.clone(), [])
+    
+    useEffect(() => {
+        if (meshRef.current)
+        {
+            meshRef.current.material.emissive.set(isHit ? '#C23110' : '#0FC2C0')
+        }
+    }, [isHit])
+
     return <group position= { position }>
         {/* Static floor */}
         <mesh 
@@ -81,16 +95,19 @@ export function BlockSpinner({ position = [ 0, 0, 0 ] })
         />
         {/* Kinematic rotating obstacle */}
         <RigidBody 
-        ref={ obstacle } 
-        type="kinematicPosition"
-        name="obstacle"
-        position={ [ 0, 0.3, 0 ] } 
-        restitution={ 0.2 } 
-        friction={ 0 }
+            ref={ obstacle } 
+            type="kinematicPosition"
+            name="obstacle"
+            position={ [ 0, 0.3, 0 ] } 
+            restitution={ 0.2 } 
+            friction={ 0 }
+            onCollisionEnter={() => setIsHit(true)}
+            onCollisionExit={() => setIsHit(false)}
         >
-            <mesh 
+            <mesh
+                ref={ meshRef }
                 geometry={ boxGeometry } 
-                material={ obstacleMaterial } 
+                material={ material } 
                 position={ [ 0, -0.1, 0] } 
                 scale={ [ 3.5, 0.3, 0.3 ] } 
                 castShadow 
@@ -113,7 +130,20 @@ export function BlockSpinner({ position = [ 0, 0, 0 ] })
 export function BlockLimbo({ position = [ 0, 0, 0 ] })
 {
     const obstacle = useRef()
+    const meshRef = useRef()
+    const [isHit, setIsHit] = useState(false)
+
     const [ timeOffset ] = useState(() => Math.random() * Math.PI * 2)
+
+    // Update material emissive color based on hit
+    const material = useMemo(() => obstacleMaterial.clone(), [])
+    
+    useEffect(() => {
+        if (meshRef.current)
+        {
+            meshRef.current.material.emissive.set(isHit ? '#C23110' : '#0FC2C0')
+        }
+    }, [isHit])
 
     useFrame((state) => 
     {
@@ -141,10 +171,13 @@ export function BlockLimbo({ position = [ 0, 0, 0 ] })
         position={ [ 0, 0.3, 0 ] } 
         restitution={ 0.2 } 
         friction={ 0 }
+        onCollisionEnter={() => setIsHit(true)}
+        onCollisionExit={() => setIsHit(false)}
         >
-            <mesh 
+            <mesh
+                ref={ meshRef }
                 geometry={ boxGeometry } 
-                material={ obstacleMaterial } 
+                material={ material } 
                 position={ [ 0, -0.1, 0] } 
                 scale={ [ 3.5, 0.75, 0.3 ] } 
                 castShadow 
@@ -165,8 +198,21 @@ export function BlockLimbo({ position = [ 0, 0, 0 ] })
  */
 export function BlockAxe({ position = [0, 0, 0] }) {
     const obstacle = useRef()
+    const meshRef = useRef()
+
+    const [isHit, setIsHit] = useState(false)
     const [speed] = useState(() => (Math.random() * 0.5 + 1.75))
     const [offset] = useState(() => Math.random() * Math.PI * 2)
+
+    // Update material emissive color based on hit
+    const material = useMemo(() => obstacleMaterial.clone(), [])
+    
+    useEffect(() => {
+        if (meshRef.current)
+        {
+            meshRef.current.material.emissive.set(isHit ? '#C23110' : '#0FC2C0')
+        }
+    }, [isHit])
 
     useFrame((state) => {
         const time = state.clock.getElapsedTime()
@@ -198,20 +244,24 @@ export function BlockAxe({ position = [0, 0, 0] }) {
                 position={ [ 0, 1.5, 0 ] }
                 restitution={ 0.2 }
                 friction={ 0 }
+                onCollisionEnter={() => setIsHit(true)}
+                onCollisionExit={() => setIsHit(false)}
             >
                 <group>
                     {/* Axe shaft */}
                     <mesh
+                        ref={ meshRef }
                         geometry={ boxGeometry }
-                        material={ obstacleMaterial }
+                        material={ material }
                         scale={ [ 0.2, 1, 0.2 ] }
                         position={ [ 0, -0.5, 0 ] } // centered around pivot
                         castShadow
                     />
                     {/* Axe blade */}
                     <mesh
+                        ref={ meshRef }
                         geometry={ boxGeometry }
-                        material={ obstacleMaterial }
+                        material={ material }
                         scale={ [ 2, 1.2, 0.2 ] }
                         position={ [ 0, -1.1, 0 ] }
                         castShadow
@@ -232,6 +282,9 @@ export function BlockAxe({ position = [0, 0, 0] }) {
 
 export function BlockStepper({ position }) {
     const stepRefs = [ useRef(), useRef(), useRef() ]
+    const meshRef = useRef()
+
+    const [isHit, setIsHit] = useState(false)
 
     // Generate unique speeds and phase offsets for each step on mount
     const [motion] = useState(() =>
@@ -243,7 +296,17 @@ export function BlockStepper({ position }) {
 
     const randomHeights = useMemo(() => 
         Array.from({ length: 3 }, () => 0.2 + Math.random() * 0.4), []
-      )
+    )
+
+    // Update material emissive color based on hit
+    const material = useMemo(() => obstacleMaterial.clone(), [])
+    
+    useEffect(() => {
+        if (meshRef.current)
+        {
+            meshRef.current.material.emissive.set(isHit ? '#C23110' : '#0FC2C0')
+        }
+    }, [isHit])
 
     useFrame((state) => {
         const time = state.clock.getElapsedTime()
@@ -282,10 +345,13 @@ export function BlockStepper({ position }) {
                     colliders="cuboid"
                     restitution={ 0.2 }
                     friction={ 0 }
+                    onCollisionEnter={() => setIsHit(true)}
+                    onCollisionExit={() => setIsHit(false)}
                 >
                     <mesh
+                        ref={ meshRef }
                         geometry={ boxGeometry }
-                        material={ obstacleMaterial }
+                        material={ material }
                         position={ [ 0, -0.1, 0 ] }
                         scale={ [ 0.8, randomHeights[i], 0.8 ] }
                         castShadow
