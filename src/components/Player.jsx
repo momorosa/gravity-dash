@@ -156,7 +156,14 @@ export default function Player()
             // return
 
         if(bodyPosition.z < - (blocksCount * 4 + 2))
-            end()  
+            end()
+
+        /**
+         * Countdown Timer
+         */
+        const remainingTime = (useGame.getState().startTime - Date.now()) / 1000
+        if (remainingTime <= 0)
+            end()
     })
 
     return <RigidBody 

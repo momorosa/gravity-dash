@@ -11,7 +11,6 @@ export default create(subscribeWithSelector((set) =>
              * Time
              */  
             startTime: 0,
-            endTime: 0,
 
             /**
              * Health
@@ -37,7 +36,11 @@ export default create(subscribeWithSelector((set) =>
                 set((state) =>
                 {
                     if(state.phase === 'ready')
-                        return { phase: 'playing', startTime: Date.now(), health: 10 }
+                        return { 
+                            phase: 'playing', 
+                            startTime: Date.now() + 7000, 
+                            health: 10
+                        }
         
                     return {}
                 })

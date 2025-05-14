@@ -31,21 +31,25 @@ export default function Interface()
         {
             const state = useGame.getState()
 
-            let elapsedTime = 0
+            let remaining = 0
 
-            // While playing: calculate time since the game started
+            // While playing: calculate remaining since the game started
             if (state.phase === 'playing')
-                elapsedTime = Date.now() - state.startTime
+                remaining = (state.startTime - Date.now()) / 1000
+                if (remaining <= 0)
+                {
+                    useGame.getState().end() //End the game if timer hits 0
+                    remaining = 0
+                }
             // When ended: lock the displayed time to the final duration
             else if (state.phase === 'ended')
-                elapsedTime = state.endTime - state.startTime
+                remaining = 0
             
             // Format and update the visible timer text
-            elapsedTime /= 1000
-            elapsedTime = elapsedTime.toFixed(2)
+            remaining = remaining.toFixed(2)
 
             if (time.current)
-                time.current.textContent = elapsedTime
+                time.current.textContent = remaining
 
         })
 
@@ -56,8 +60,8 @@ export default function Interface()
 
     return <div className="fixed top-0 left-0 w-full h-screen pointer-events-none font-primary">
         {/* Timer Display */}
-        <div ref={ time } className="absolute top-4 left-1/2 -translate-x-1/2 text-3xl text-white font-bold flex justify-center items-center w-64 bg-linear-65 from-purple-900 to-red-500 opacity-75 py-4 rounded-full inset-shadow-sm">
-            0.00
+        <div ref={ time } className="absolute top-4 left-1/2 -translate-x-1/2 text-4xl text-white font-bold flex justify-center items-center w-64 bg-linear-65 from-purple-900 to-red-500 opacity-75 py-4 rounded-full inset-shadow-sm">
+            7.00
         </div>
 
         {/* Restart Button */}
